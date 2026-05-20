@@ -11,6 +11,8 @@ Route::post('/upload-image', [UploadImageController::class, 'upload'])->name('up
 Route::group(['as' => 'auth.', 'prefix' => 'auth'], function () {
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgotPassword');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('resetPassword');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/me', [AuthController::class, 'me'])->name('me');
     Route::post('/profile', [AuthController::class, 'updateProfile'])->name('updateProfile');

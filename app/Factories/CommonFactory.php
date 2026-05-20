@@ -3,6 +3,7 @@
 namespace App\Factories;
 
 use App\Services\Common\FileService;
+use App\Services\Common\RecaptchaService;
 
 class CommonFactory
 {
@@ -17,6 +18,9 @@ class CommonFactory
         $app->scoped(FileService::class, function ($app) {
             return new FileService();
         });
+        $app->scoped(RecaptchaService::class, function ($app) {
+            return new RecaptchaService();
+        });
     }
 
     /**
@@ -27,5 +31,15 @@ class CommonFactory
     public static function getFileService()
     {
         return app(FileService::class);
+    }
+
+    /**
+     * Get reCAPTCHA Service
+     *
+     * @return RecaptchaService
+     */
+    public static function getRecaptchaService()
+    {
+        return app(RecaptchaService::class);
     }
 }

@@ -19,7 +19,7 @@ class AuthService extends Service
     public function login(array $data): ?array
     {
         $admin = Admin::query()->where('email', $data['email'])->first();
-        if (!$admin || !Hash::check($data['password'], $admin->password)) {
+        if (!$admin || !Hash::check($data['password'], $admin->password) || $admin->status !== UserStatus::ACTIVE) {
             return null;
         }
 

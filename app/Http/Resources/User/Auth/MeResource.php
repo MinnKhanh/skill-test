@@ -19,7 +19,16 @@ class MeResource extends JsonResource
 
         return [
             'name' => $data->name,
+            'first_name' => $data->first_name,
+            'last_name' => $data->last_name,
+            'age' => $data->age,
+            'gender' => $data->gender?->value,
+            'birth_date' => $data->birth_date?->toDateString(),
             'email' => $data->email,
+            'avatar' => $data->avatarImage ? [
+                'url' => $data->avatarImage->url,
+                'thumb' => $data->avatarImage->thumb,
+            ] : null,
         ];
     }
 }

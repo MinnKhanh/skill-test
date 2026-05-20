@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use Illuminate\Support\Str;
+use App\Factories\CommonFactory;
 use App\Helpers\ResponseHelper;
 use Illuminate\Http\JsonResponse;
 use App\Exceptions\InputException;
@@ -13,6 +14,8 @@ use App\Http\Controllers\Traits\HasRateLimiter;
 use App\Http\Requests\User\Auth\RegisterRequest;
 use App\Http\Requests\User\Auth\UpdateProfileRequest;
 use App\Http\Requests\User\Auth\ChangePasswordRequest;
+use App\Http\Requests\User\Auth\ForgotPasswordRequest;
+use App\Http\Requests\User\Auth\ResetPasswordRequest;
 
 class AuthController extends BaseController
 {
@@ -26,8 +29,8 @@ class AuthController extends BaseController
      */
     public function __construct()
     {
-        $this->middleware($this->authMiddleware())->except(['login', 'register']);
-        $this->middleware($this->guestMiddleware())->only(['login', 'register']);
+        $this->middleware($this->authMiddleware())->except(['login', 'register', 'forgotPassword', 'resetPassword']);
+        $this->middleware($this->guestMiddleware())->only(['login', 'register', 'forgotPassword', 'resetPassword']);
     }
 
     /**
@@ -40,11 +43,24 @@ class AuthController extends BaseController
      */
     public function register(RegisterRequest $request): JsonResponse
     {
+        CommonFactory::getRecaptchaService()->verify(
+            $request->input('g-recaptcha-response'),
+            $request->ip(),
+        );
+
         $inputs = $request->only([
-            'name',
+            'first_name',
+            'last_name',
+            'age',
+            'gender',
+            'birth_date',
             'email',
             'password',
         ]);
+        if ($request->hasFile('avatar')) {
+            $inputs['avatar'] = $request->file('avatar');
+        }
+
         $data = UserFactory::getAuthService()->register($inputs);
 
         return $this->sendSuccessResponse($data, trans('auth.register_success'));
@@ -99,7 +115,7 @@ class AuthController extends BaseController
      */
     public function me(): JsonResponse
     {
-        $currentUser = $this->guard()->user();
+        $currentUser = $this->guard()->user()?->load('avatarImage');
 
         return $this->sendSuccessResponse(new MeResource($currentUser));
     }
@@ -137,6 +153,20 @@ class AuthController extends BaseController
         $data = UserFactory::getAuthService()->withUser($currentUser)->changePassword($inputs);
 
         return $this->sendSuccessResponse($data, trans('auth.logout_success'));
+    }
+
+    public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
+    {
+        $message = UserFactory::getAuthService()->sendPasswordResetLink($request->validated('email'));
+
+        return $this->sendSuccessResponse(null, $message);
+    }
+
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
+    {
+        UserFactory::getAuthService()->resetPassword($request->validated());
+
+        return $this->sendSuccessResponse(null, trans('auth.password_reset_success'));
     }
 
     /**

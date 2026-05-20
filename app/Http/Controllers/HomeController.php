@@ -9,12 +9,10 @@ class HomeController extends Controller
     /**
      * Homepage
      *
-     * @return JsonResponse
+     * @return \Illuminate\View\View
      */
-    public function index(): JsonResponse
+    public function index()
     {
-        return $this->sendSuccessResponse([
-            'status' => true,
-        ]);
+        return view('welcome');
     }
 }

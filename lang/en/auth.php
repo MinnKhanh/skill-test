@@ -20,4 +20,10 @@ return [
     'register_success' => 'Registration successful.',
     'register_fail' => 'Registration failed. Please try again.',
     'throttle_user' => 'Your account is temporarily locked due to too many failed login attempts. Please try again in :seconds seconds.',
+    'recaptcha_required' => 'Please complete the reCAPTCHA check.',
+    'recaptcha_failed' => 'reCAPTCHA verification failed. Please try again.',
+    'recaptcha_not_configured' => 'reCAPTCHA is not configured.',
+    'google_login_failed' => 'Google login failed. Please try again.',
+    'password_reset_link_sent' => 'If this email exists, a password reset link has been sent.',
+    'password_reset_success' => 'Your password has been reset.',
 ];

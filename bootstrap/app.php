@@ -57,10 +57,12 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
         $exceptions->render(function (ValidationException $exception, $request) {
-            return ResponseHelper::sendResponse(
-                $exception->status,
-                trans('response.invalid'),
-                $exception->errors(),
-            );
+            if (RequestHelper::isApi($request)) {
+                return ResponseHelper::sendResponse(
+                    $exception->status,
+                    trans('response.invalid'),
+                    $exception->errors(),
+                );
+            }
         });
     })->create();
